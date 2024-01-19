@@ -1,8 +1,10 @@
 import { useCallback, useState } from "react";
 import { signIn } from "next-auth/react";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 function useAuth() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -12,18 +14,6 @@ function useAuth() {
     setVariant((pre) => (pre === "login" ? "register" : "login"));
   }, []);
 
-  const register = useCallback(async () => {
-    try {
-      await axios.post("/api/register", {
-        email,
-        name,
-        password,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, [email, name, password]);
-
   const login = useCallback(async () => {
     try {
       await signIn("credentials", {
@@ -32,10 +22,24 @@ function useAuth() {
         redirect: false,
         callbackUrl: "/",
       });
+      router.push("/");
     } catch (error) {
       console.log(error);
     }
-  }, [email, password]);
+  }, [email, password, router]);
+
+  const register = useCallback(async () => {
+    try {
+      await axios.post("/api/register", {
+        email,
+        name,
+        password,
+      });
+      login();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [email, name, password, login]);
 
   return {
     login,
@@ -45,7 +49,9 @@ function useAuth() {
     setName,
     setPassword,
     variant,
-    email,name,password
+    email,
+    name,
+    password,
   };
 }
 
