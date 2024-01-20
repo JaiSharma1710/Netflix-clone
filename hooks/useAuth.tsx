@@ -18,16 +18,23 @@ function useAuth() {
   //login new user on the platform
   const login = useCallback(async () => {
     try {
+      if (!email) throw new Error("Enter the email");
+      if (!password) throw new Error("Enter the password");
+
       const response = await signIn("credentials", {
         email,
         password,
         redirect: false,
         callbackUrl: "/",
       });
+
+      if (response?.status !== 200) throw new Error(response?.error);
+
+      router.push("/");
     } catch (error: any) {
-      toast.error(error.message || "something went wrong");
+      toast.error(getErrorMessage(error));
     }
-  }, [email, password]);
+  }, [email, password, router]);
 
   //regester new user on the platform
   const register = useCallback(async () => {
@@ -41,18 +48,14 @@ function useAuth() {
       if (response.status !== 201) throw new Error("Error while creating user");
 
       toast.success("User created, Please login to continue");
-      setEmail("");
-      setName("");
-      setPassword("");
       setVariant("login");
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Something went wrong";
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(error));
     }
   }, [email, name, password]);
+
+  const getErrorMessage = (error: any) =>
+    error.response?.data?.message || error.message || "Something went wrong";
 
   return {
     login,
