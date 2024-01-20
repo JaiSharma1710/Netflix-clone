@@ -28,7 +28,7 @@ function useAuth() {
         callbackUrl: "/",
       });
 
-      if (response?.status !== 200) throw new Error(response?.error);
+      if (response?.status !== 200) throw new Error(response?.error || "");
 
       router.push("/");
     } catch (error: any) {
