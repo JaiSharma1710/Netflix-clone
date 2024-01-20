@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { signIn } from "next-auth/react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
 function useAuth() {
   const router = useRouter();
@@ -14,32 +15,44 @@ function useAuth() {
     setVariant((pre) => (pre === "login" ? "register" : "login"));
   }, []);
 
+  //login new user on the platform
   const login = useCallback(async () => {
     try {
-      await signIn("credentials", {
+      const response = await signIn("credentials", {
         email,
         password,
         redirect: false,
         callbackUrl: "/",
       });
-      router.push("/");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      toast.error(error.message || "something went wrong");
     }
-  }, [email, password, router]);
+  }, [email, password]);
 
+  //regester new user on the platform
   const register = useCallback(async () => {
     try {
-      await axios.post("/api/register", {
+      const response = await axios.post("/api/register", {
         email,
         name,
         password,
       });
-      login();
-    } catch (error) {
-      console.log(error);
+
+      if (response.status !== 201) throw new Error("Error while creating user");
+
+      toast.success("User created, Please login to continue");
+      setEmail("");
+      setName("");
+      setPassword("");
+      setVariant("login");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong";
+      toast.error(errorMessage);
     }
-  }, [email, name, password, login]);
+  }, [email, name, password]);
 
   return {
     login,
