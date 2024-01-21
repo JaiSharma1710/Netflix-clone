@@ -25,12 +25,10 @@ function useAuth() {
         email,
         password,
         redirect: false,
-        callbackUrl: "/",
+        callbackUrl: "/profiles",
       });
-
       if (response?.status !== 200) throw new Error(response?.error || "");
-
-      router.push("/");
+      router.push("/profiles");
     } catch (error: any) {
       toast.error(getErrorMessage(error));
     }
