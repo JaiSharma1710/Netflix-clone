@@ -35,8 +35,6 @@ const Navbar = () => {
     setShowAccountMenu((pre) => !pre);
   }, []);
 
-  console.log(showBackground);
-
   return (
     <nav className="w-full fixed z-40">
       <div
