@@ -4,9 +4,11 @@ import Navbar from "@/components/Navbar";
 import Billboard from "@/components/Billboard";
 import MovieList from "@/components/MovieList";
 import useMovies from "@/hooks/useMovies";
+import useFavorites from '@/hooks/useFavorites';
 
 const Home = () => {
   const { data: movies = [] } = useMovies();
+  const { data: favorites = [] } = useFavorites();
 
   return (
     <div>
@@ -14,6 +16,7 @@ const Home = () => {
       <Billboard />
       <div className="pb-40">
         <MovieList title="Trending Now" data={movies.data} />
+        <MovieList title="My List" data={favorites.data} />
       </div>
     </div>
   );
