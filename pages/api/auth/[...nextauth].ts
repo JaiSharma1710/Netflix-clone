@@ -5,8 +5,9 @@ import GoogleProvider from "next-auth/providers/google";
 import NextAuth from "next-auth/next";
 import prismadb from "@/lib/prismadb";
 import { compare } from "bcrypt";
+import type { NextAuthOptions } from 'next-auth'
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     Credentials({
       id: "credentials",
@@ -67,4 +68,6 @@ export default NextAuth({
     secret: process.env.NEXTAUTH_JWT_SECRET,
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+export default NextAuth(authOptions);
