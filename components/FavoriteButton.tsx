@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from "react";
 import { AiOutlineCheck, AiOutlinePlus } from "react-icons/ai";
 
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useFavorites from '@/hooks/useFavorites';
+import useFavorites from "@/hooks/useFavorites";
 
 interface FavoriteButtonProps {
   movieId: string;
@@ -12,13 +12,13 @@ interface FavoriteButtonProps {
 const FavoriteButton: React.FC<FavoriteButtonProps> = ({ movieId }) => {
   const { mutate: mutateFavorites } = useFavorites();
 
-  const { data: currentUser, mutate } = useCurrentUser();
+  const { data, mutate } = useCurrentUser();
 
   const isFavorite = useMemo(() => {
-    const list = currentUser?.favoriteIds || [];
+    const list = data?.currentUser?.favoriteIds || [];
 
     return list.includes(movieId);
-  }, [currentUser, movieId]);
+  }, [data, movieId]);
 
   const toggleFavorites = useCallback(async () => {
     let response;
@@ -32,11 +32,11 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ movieId }) => {
     const updatedFavoriteIds = response?.data?.favoriteIds;
 
     mutate({
-      ...currentUser,
+      ...data?.currentUser,
       favoriteIds: updatedFavoriteIds,
     });
     mutateFavorites();
-  }, [movieId, isFavorite, currentUser, mutate, mutateFavorites]);
+  }, [movieId, isFavorite, data, mutate, mutateFavorites]);
 
   const Icon = isFavorite ? AiOutlineCheck : AiOutlinePlus;
 
